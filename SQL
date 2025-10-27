@@ -1,0 +1,334 @@
+CREATE DATABASE APU_E_Bookstore;
+USE APU_E_Bookstore;
+
+-- A table for publisher names
+CREATE TABLE Publisher (
+    PublisherID VARCHAR(50) PRIMARY KEY,
+    Publisher_name VARCHAR(50)
+);
+
+INSERT INTO Publisher (PublisherID, Publisher_name) VALUES
+('P01', 'Penguin Random House'),
+('P02', 'HarperCollins'),
+('P03', 'Simon & Schuster'),
+('P04', 'Macmillan'),
+('P05', 'Hachette Livre'),
+('P06', 'Scholastic')
+;
+
+-- A table for publisher orders
+CREATE TABLE PublisherOrders (
+    PublisherOrderID VARCHAR(50) PRIMARY KEY,
+    PublisherID VARCHAR(50),
+    OrderDate DATE,
+    Quantity INT,
+    Status ENUM('Pending', 'Completed'),
+    FOREIGN KEY (PublisherID) REFERENCES Publisher(PublisherID)
+);
+
+-- Insert data into PublisherOrders
+INSERT INTO PublisherOrders (PublisherOrderID, PublisherID, OrderDate, Quantity, Status) VALUES
+('D01', 'P01', '2023-10-01', 5, 'Completed'),
+('D02', 'P02', '2023-10-02', 3, 'Completed'),
+('D03', 'P03', '2023-10-03', 10, 'Completed'),
+('D04', 'P04', '2023-10-04', 2, 'Pending'),
+('D05', 'P05', '2023-10-05', 8, 'Completed'),
+('D06', 'P06', '2023-10-06', 1, 'Pending'),
+('D07', 'P03', '2023-10-07', 4, 'Completed'),
+('D08', 'P04', '2023-10-08', 6, 'Pending'),
+('D09', 'P06', '2023-10-09', 2, 'Completed'),
+('D10', 'P02', '2023-10-10', 9, 'Pending');
+
+CREATE TABLE PublisherOrder_details (
+    PublisherOrder_detailsID VARCHAR(50) PRIMARY KEY,
+    PublisherOrderID VARCHAR(50) ,
+    BookID VARCHAR(50),
+    Quantity INT,
+    price float,
+    FOREIGN KEY (PublisherOrderID) REFERENCES Publisherorders(PublisherOrderID),
+    FOREIGN KEY (BookID) REFERENCES Books(BookID)
+);
+INSERT INTO PublisherOrder_details (PublisherOrder_detailsID, PublisherOrderID, BookID, Quantity, price) VALUES
+('P01D01', 'D01', 'B01', 5, 19.99),
+('P01D02', 'D02', 'B02', 3, 29.99),
+('P01D03', 'D03', 'B03', 10, 15.99),
+('P01D04', 'D04', 'B04', 2, 22.50),
+('P01D05', 'D05', 'B05', 8, 10.00),
+('P01D06', 'D06', 'B06', 1, 25.00),
+('P01D07', 'D07', 'B09', 4, 30.00),
+('P01D08', 'D08', 'B10', 6, 5.99),
+('P01D09', 'D09', 'B07', 2, 17.50),
+('P01D10', 'D10', 'B08', 9, 12.75);
+
+
+
+-- A table for the books details
+CREATE TABLE Books (
+    BookID VARCHAR(50) PRIMARY KEY,
+    Title VARCHAR(50),
+    Author VARCHAR(50),
+    Price DECIMAL NOT NULL,
+    Quantity INT NOT NULL,
+    Genre VARCHAR(50),
+    PublisherID VARCHAR(50),
+    FOREIGN KEY (PublisherID) REFERENCES Publisher(PublisherID)
+);
+-- Insert data into Books
+INSERT INTO Books (BookID, Title, Author, Price, Quantity, Genre, PublisherID) VALUES
+('B01', 'The Silent Patient', 'Alex Michaelides', 19.99, 10, 'Thriller', 'P01'), 
+('B02', 'Educated', 'Tara Westover', 29.99, 5, 'Memoir', 'P03'),                  
+('B03', 'Where the Crawdads Sing', 'Delia Owens', 15.99, 8, 'Fiction', 'P03'), 
+('B04', 'Becoming', 'Michelle Obama', 22.50, 2, 'Biography', 'P04'),            
+('B05', 'The Alchemist', 'Paulo Coelho', 10.00, 15, 'Fiction', 'P05'),         
+('B06', 'Sapiens: A Brief History of Humankind', 'Yuval Noah Harari', 25.00, 6, 'Non-Fiction', 'P04'), 
+('B07', 'The Night Circus', 'Erin Morgenstern', 17.50, 12, 'Fantasy', 'P01'),     
+('B08', 'The Great Gatsby', 'F. Scott Fitzgerald', 12.75, 7, 'Classic', 'P05'),  
+('B09', 'Dune', 'Frank Herbert', 30.00, 4, 'Science Fiction', 'P03'),            
+('B10', 'Harry Potter and the Sorcerer Stone', 'J.K. Rowling', 5.99, 20, 'Fantasy', 'P04'); 
+-- A table for the member's details
+CREATE TABLE Members (
+    MemberID VARCHAR(50) PRIMARY KEY,
+    Name VARCHAR(50) NOT NULL,
+    Email VARCHAR(50) UNIQUE NOT NULL,
+    Address VARCHAR(250) NOT NULL,
+    Contact_number int NOT NULL
+);
+-- Insert data into Members with Contact_number as INT
+INSERT INTO Members (MemberID, Name, Email, Address, Contact_number) VALUES
+('M01', 'Sophia Turner', 'sophia@example.com', '123 Ocean Drive', 123457890),
+('M02', 'Liam Johnson', 'liam@example.com', '456 Maple Avenue', 987653210),
+('M03', 'Emma Wilson', 'emma@example.com', '789 Elm Street', 234568901),
+('M04', 'Noah Smith', 'noah@example.com', '321 Pine Road', 345679012),
+('M05', 'Olivia Brown', 'olivia@example.com', '654 Birch Lane', 457890123),
+('M06', 'James Davis', 'james@example.com', '987 Cedar Place', 567891234),
+('M07', 'Ava Garcia', 'ava@example.com', '159 Cherry Boulevard', 678912345),
+('M08', 'Lucas Martinez', 'lucas@example.com', '753 Spruce Drive', 789123456),
+('M09', 'Mia Rodriguez', 'mia@example.com', '951 Willow Way', 890134567),
+('M10', 'Ethan Lee', 'ethan@example.com', '357 Oak Street', 901245678);
+-- A table for the reviews
+CREATE TABLE Reviews (
+    ReviewID VARCHAR(50) PRIMARY KEY,
+    BookID VARCHAR(50),
+    MemberID VARCHAR(50) ,
+    Rating INT CHECK (Rating BETWEEN 1 AND 10),
+    ReviewText TEXT,
+    FOREIGN KEY (BookID) REFERENCES books(BookID),
+    FOREIGN KEY (MemberID) REFERENCES Members(MemberID)
+);
+-- Insert data into Reviews
+INSERT INTO Reviews (ReviewID, BookID, MemberID, Rating, ReviewText) VALUES
+('R01', 'B01', 'M01', 8, 'Gripping and intense!'),   
+('R02', 'B01', 'M04', 9, 'An inspiring memoir.'),    
+('R03', 'B10', 'M04', 7, 'Engaging but a bit predictable.'), 
+('R04', 'B03', 'M04', 8, 'Beautifully written.'),     
+('R05', 'B01', 'M03', 7, 'Interesting but slow at times.'),  
+('R06', 'B04', 'M06', 5, 'Not as expected'),      
+('R07', 'B02', 'M03', 8, 'Fascinating read.'),       
+('R08', 'B04', 'M02', 4, 'I did not like the characters'),  
+('R09', 'B07', 'M09', 7, 'A must-read classic.'),    
+('R10', 'B01', 'M10', 8, 'Epic science fiction tale!');
+
+-- A table for the orders details
+CREATE TABLE member_Orders (
+    Member_OrderID VARCHAR(50) PRIMARY KEY,
+    OrderDate DATETIME NOT NULL,
+    MemberID VARCHAR(50),
+    BookID VARCHAR(50),
+    Order_Status ENUM('shipped', 'pending', 'canceled', 'delivered'),
+    Quantity INT NOT NULL,
+    FOREIGN KEY (BookID) REFERENCES Books(BookID),
+    FOREIGN KEY (MemberID) REFERENCES Members(MemberID)
+);
+
+-- Insert data into member_Orders
+INSERT INTO member_Orders (Member_OrderID, OrderDate, MemberID, BookID, Order_Status, Quantity) VALUES
+('d01', '2023-10-01 10:00:00', 'M01', 'B01', 'shipped', 1),
+('d02', '2023-10-02 11:00:00', 'M01', 'B02', 'pending', 2),
+('d03', '2023-10-03 12:00:00', 'M02', 'B01', 'delivered', 1),
+('d04', '2023-10-04 13:00:00', 'M03', 'B03', 'canceled', 1),
+('d05', '2023-10-05 14:00:00', 'M04', 'B04', 'pending', 1),
+('d06', '2023-10-06 15:00:00', 'M05', 'B05', 'delivered', 2),
+('d07', '2023-10-07 16:00:00', 'M01', 'B06', 'delivered', 1),
+('d08', '2023-10-08 17:00:00', 'M02', 'B02', 'shipped', 1),
+('d09', '2023-10-09 18:00:00', 'M06', 'B07', 'shipped', 1),
+('d10', '2023-10-10 19:00:00', 'M07', 'B08', 'delivered', 1);
+
+CREATE TABLE member_Ordersdetails (
+    Member_OrderdetailsID VARCHAR(50) PRIMARY KEY,
+    Member_OrderID VARCHAR(50),
+    BookID VARCHAR(50),
+    Quantity INT NOT NULL,
+    total int not null,
+    FOREIGN KEY (BookID) REFERENCES Books(BookID),
+    FOREIGN KEY (Member_OrderID ) REFERENCES member_Orders(Member_OrderID)
+);
+INSERT INTO member_ordersdetails (Member_OrderdetailsID, Member_OrderID, BookID, Quantity, total) VALUES
+('D01D01', 'd01', 'B01', 1, 20),
+('D01D02', 'd02', 'B02', 2, 60),
+('D01D03', 'd03', 'B01', 1, 20),
+('D01D04', 'd04', 'B03', 1, 16),
+('D01D05', 'd05', 'B04', 1, 23),
+('D01D06', 'd06', 'B05', 2, 20),
+('D01D07', 'd07', 'B06', 1, 25),
+('D01D08', 'd08', 'B02', 1, 30),
+('D01D09', 'd09', 'B07', 1, 18),
+('D01D10', 'd10', 'B08', 1, 13);
+
+
+-- A table for the shopping cart
+CREATE TABLE ShoppingCart (
+    CartID VARCHAR(50) PRIMARY KEY,
+    MemberID VARCHAR(50),
+    CreatedDate DATE,
+    BookID VARCHAR(50),
+    Quantity INT,
+    FOREIGN KEY (MemberID) REFERENCES Members(MemberID),
+    FOREIGN KEY (BookID) REFERENCES Books(BookID)
+);
+
+-- insert data into ShoppingCart
+INSERT INTO ShoppingCart (CartID, MemberID, CreatedDate, BookID, Quantity) VALUES
+('C01', 'M01', '2023-10-01', 'B01', 1), 
+('C02', 'M01', '2023-10-02', 'B03', 2),
+('C03', 'M02', '2023-10-03', 'B04', 1),
+('C04', 'M03', '2023-10-04', 'B02', 1),
+('C05', 'M04', '2023-10-05', 'B10', 1), 
+('C06', 'M05', '2023-10-06', 'B05', 3),
+('C07', 'M01', '2023-10-07', 'B06', 2);  
+
+CREATE TABLE shoppingcart_details (
+    CartdetailsID VARCHAR(50) PRIMARY KEY,
+    CartID VARCHAR(50),
+    BookID VARCHAR(50),
+    Quantity INT,
+    FOREIGN KEY (CartID) REFERENCES ShoppingCart(CartID),
+    FOREIGN KEY (BookID) REFERENCES Books(BookID)
+);
+INSERT INTO shoppingcart_details (CartdetailsID, CartID, BookID, Quantity) VALUES
+('C01D01', 'C01', 'B01', 1),
+('C01D02', 'C02', 'B03', 2),
+('C01D03', 'C03', 'B04', 1),
+('C01D04', 'C04', 'B02', 1),
+('C01D05', 'C05', 'B10', 1),
+('C01D06', 'C06', 'B05', 3),
+('C01D07', 'C07', 'B06', 2);
+
+-- Total number of feedbak per book
+SELECT 
+    b.BookID, 
+    b.Title, 
+    COUNT(r.ReviewID) AS TotalFeedback
+FROM 
+    Books b
+LEFT JOIN 
+    Reviews r ON b.BookID = r.BookID
+GROUP BY 
+    b.BookID, b.Title;
+    
+    --  Total Number of Feedback per Member
+    
+    SELECT 
+    m.MemberID, 
+    m.Name, 
+    COUNT(r.ReviewID) AS TotalFeedback
+FROM 
+    Members m
+LEFT JOIN 
+    Reviews r ON m.MemberID = r.MemberID
+GROUP BY 
+    m.MemberID, m.Name;
+    
+    --  Total Number of Books Published by Each Publisher
+    SELECT 
+    p.PublisherID, 
+    p.Publisher_name, 
+    COUNT(b.BookID) AS TotalBooks
+FROM 
+    Publisher p
+LEFT JOIN 
+    Books b ON p.PublisherID = b.PublisherID
+GROUP BY 
+    p.PublisherID, p.Publisher_name;
+    
+    --  Total Number of Books for Each Genre
+    
+    SELECT 
+    Genre, 
+    COUNT(BookID) AS TotalBooks
+FROM 
+    Books
+GROUP BY 
+    Genre;
+    
+    -- Books with Quantity More Than the Average Quantity of All Books
+    
+    SELECT 
+    BookID, 
+    Title, 
+    Quantity
+FROM 
+    Books
+WHERE 
+    Quantity > (SELECT AVG(Quantity) FROM Books);
+    
+    ###--  Total Number of Books Ordered by Store Manager from Various Publishers
+ 
+SELECT 
+    PublisherID, 
+    SUM(Quantity) AS TotalBooksOrdered
+FROM 
+    PublisherOrders
+GROUP BY 
+    PublisherID;
+
+    
+    -- Members Who Did Not Make Any Orders
+    SELECT 
+    m.MemberID, 
+    m.Name
+FROM 
+    Members m
+LEFT JOIN 
+    member_Orders o ON m.MemberID = o.MemberID
+WHERE 
+    o.MemberID IS NULL;
+
+-- Find the genres of the book which has the most number of quantity in stock
+SELECT Genre, Quantity
+FROM Books
+WHERE Quantity = (
+    SELECT MAX(Quantity) FROM Books
+);
+
+-- A list of purchased books that have not been delivered to members
+SELECT 
+    m.MemberID,
+    m.Address,
+    m.Contact_number,
+    o.BookID,
+    b.Title,
+    o.Quantity,
+    o.OrderDate,
+    o.Order_Status
+FROM 
+    member_Orders o
+JOIN 
+    Members m ON o.MemberID = m.MemberID
+JOIN 
+    Books b ON o.BookID = b.BookID
+WHERE 
+    o.Order_Status != 'delivered';
+
+-- Show the members who made more than 2 orders
+SELECT 
+    MemberID, 
+    COUNT(Member_OrderID) AS OrderCount
+FROM member_Orders
+GROUP BY MemberID
+HAVING COUNT(Member_OrderID) > 2;
+
+
+
+
+
+
